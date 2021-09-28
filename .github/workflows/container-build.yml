@@ -1,0 +1,45 @@
+name: Build and push container image to dockerhub
+
+on:
+  # testing config item
+  pull_request:
+  # create a tag, and then a rls in GitHub to execute this task
+  release:
+    types:
+      - created
+
+jobs:
+  build-and-push:
+    env:
+      # this isn't included in releases built by a tag or pr
+      RELEASE_TAG: 1.0.0
+      #RELEASE_TAG: ${{ github.event.release.tag_name }}
+      # testing config item
+      REPO_ID: kholmescarmalink/in-toto
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout in-toto
+        uses: actions/checkout@v2
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Build and export to Docker
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          load: true
+          file: dockerfiles/base/Dockerfile
+          tags: ${{ RELEASE_TAG }}
+      - name: Test - can we run in-toto-verify
+        run: |
+          docker run --rm ${{ RELEASE_TAG }} touch tmp.txt && in-toto-keygen tmp.txt
+      - name: Build and push
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          push: true
+          tags: ${{ REPO_ID }}:latest,${{ REPO_ID }}:${{ RELEASE_TAG }}
