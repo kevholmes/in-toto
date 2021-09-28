@@ -1,9 +1,6 @@
 name: Build and push container image to dockerhub
 
 on:
-  # testing config item
-  pull_request:
-  # create a tag, and then a rls in GitHub to execute this task
   release:
     types:
       - created
@@ -11,10 +8,7 @@ on:
 jobs:
   build-and-push:
     env:
-      # this isn't included in releases built by a tag or pr
-      RELEASE_TAG: 1.0.0
-      #RELEASE_TAG: ${{ github.event.release.tag_name }}
-      # testing config item
+      RELEASE_TAG: ${{ github.event.release.tag_name }}
       REPO_ID: kholmescarmalink/in-toto
     runs-on: ubuntu-latest
     steps:
