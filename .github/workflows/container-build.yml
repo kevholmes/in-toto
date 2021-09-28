@@ -33,7 +33,7 @@ jobs:
           context: .
           load: true
           file: dockerfiles/base/Dockerfile
-          tags: ${{ RELEASE_TAG }}
+          tags: ${{ env.RELEASE_TAG }}
       - name: Test - can we run in-toto-verify
         run: |
           docker run --rm ${{ RELEASE_TAG }} touch tmp.txt && in-toto-keygen tmp.txt
@@ -42,4 +42,4 @@ jobs:
         with:
           context: .
           push: true
-          tags: ${{ REPO_ID }}:latest,${{ REPO_ID }}:${{ RELEASE_TAG }}
+          tags: ${{ env.REPO_ID }}:latest,${{ env.REPO_ID }}:${{ env.RELEASE_TAG }}
