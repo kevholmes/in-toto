@@ -6,8 +6,9 @@ RUN printf "installed python version: \n" && python3 --version
 RUN pip install --upgrade pip && pip install wheel
 RUN printf "installed pip version: \n" && pip --version
 WORKDIR /root
-COPY . .
+COPY ./requirements-pinned.txt .
 RUN pip install --user -r requirements-pinned.txt
+COPY . .
 RUN pip install --user .
 
 # release image build
