@@ -1,3 +1,4 @@
+# build environment
 FROM alpine:3.14 as base-image
 
 RUN apk update && apk add python3 python3-dev py3-pip build-base py3-cffi libressl-dev libffi-dev
@@ -9,6 +10,7 @@ COPY . .
 RUN pip install --user -r requirements-pinned.txt
 RUN pip install --user .
 
+# release image build
 FROM alpine:3.14 AS built-image
 LABEL maintainer="Santiago Torres Arias <santiagotorres@purdue.edu>"
 
