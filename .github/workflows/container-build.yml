@@ -1,0 +1,44 @@
+name: Build and push container image to dockerhub
+
+on:
+  release:
+    types:
+      - created
+
+jobs:
+  build-and-push:
+    env:
+      RELEASE_TAG: ${{ github.event.release.tag_name }}
+      REPO_ID: kholmescarmalink/in-toto
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout in-toto
+        uses: actions/checkout@v2
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v1
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+      - name: Build and export to Docker
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          load: true
+          file: dockerfiles/base/Dockerfile
+          tags: ${{ env.RELEASE_TAG }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+      - name: Test - can we run in-toto-keygen
+        run: |
+          docker run --rm ${{ env.RELEASE_TAG }} sh -c "touch tmp.txt && in-toto-keygen tmp.txt"
+      - name: Build and push
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          push: true
+          file: dockerfiles/base/Dockerfile
+          tags: ${{ env.REPO_ID }}:latest,${{ env.REPO_ID }}:${{ env.RELEASE_TAG }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
