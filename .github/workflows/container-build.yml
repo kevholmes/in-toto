@@ -36,7 +36,7 @@ jobs:
           tags: ${{ env.RELEASE_TAG }}
       - name: Test - can we run in-toto-verify
         run: |
-          docker run --rm ${{ RELEASE_TAG }} touch tmp.txt && in-toto-keygen tmp.txt
+          docker run --rm ${{ env.RELEASE_TAG }} touch tmp.txt && in-toto-keygen tmp.txt
       - name: Build and push
         uses: docker/build-push-action@v2
         with:
