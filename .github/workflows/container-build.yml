@@ -34,9 +34,9 @@ jobs:
           load: true
           file: dockerfiles/base/Dockerfile
           tags: ${{ env.RELEASE_TAG }}
-      - name: Test - can we run in-toto-verify
+      - name: Test - can we run in-toto-keygen
         run: |
-          docker run --rm ${{ env.RELEASE_TAG }} touch tmp.txt && in-toto-keygen tmp.txt
+          docker run --rm ${{ env.RELEASE_TAG }} sh -c "touch tmp.txt && in-toto-keygen tmp.txt"
       - name: Build and push
         uses: docker/build-push-action@v2
         with:
