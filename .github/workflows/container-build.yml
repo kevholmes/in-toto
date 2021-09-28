@@ -34,6 +34,8 @@ jobs:
           load: true
           file: dockerfiles/base/Dockerfile
           tags: ${{ env.RELEASE_TAG }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
       - name: Test - can we run in-toto-keygen
         run: |
           docker run --rm ${{ env.RELEASE_TAG }} sh -c "touch tmp.txt && in-toto-keygen tmp.txt"
@@ -44,3 +46,5 @@ jobs:
           push: true
           file: dockerfiles/base/Dockerfile
           tags: ${{ env.REPO_ID }}:latest,${{ env.REPO_ID }}:${{ env.RELEASE_TAG }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
